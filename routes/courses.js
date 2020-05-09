@@ -3,6 +3,7 @@
 // import modules
 const express = require('express');
 const router = express.Router();
+const { check, validationResult } = require('express-validator/check');
 
 // import models
 const db = require('../models');
@@ -83,22 +84,39 @@ router.post('/', authenticateUser, asyncHandler(async (req, res) => {
     const course = await Course.build(req.body);
     course.userId = req.currentUser.id;
     await course.save();
-    res.status(201).location('/').end();
+    res.status(201).location(`/${course.id}`).end();
 }));
 
 // PUT /api/courses/:id 204 - Updates a course and returns no content
-router.put('/:id', authenticateUser, asyncHandler(async (req, res) => {
-    const course = await Course.findByPk(req.params.id);
-    if (course) {
-        if (course.userId === req.currentUser.id) {
-            await course.update(req.body);
-            res.status(204).end();
-        } else {
-            res.status(403).json({message: 'You cannot update this course since you are not the owner.'});
-        }
+router.put('/:id', [
+    check('title')
+        .exists({ checkNull: true, checkFalsy: true })
+        .withMessage('Please provide a value for "title"'),
+    check('description')
+        .exists({ checkNull: true, checkFalsy: true })
+        .withMessage('Please provide a value for "description"'),
+], authenticateUser, asyncHandler(async (req, res) => {
+    const errors = validationResult(req);
+    
+    if (!errors.isEmpty()) {
+        const errorMessages = errors.array().map(error => error.msg);
+
+        res.status(400).json({ errors: errorMessages });
     } else {
-        res.status(404).json({message: `Course #${req.params.id} was not found`}).end();
+        const course = await Course.findByPk(req.params.id);
+        if (course) {
+            if (course.userId === req.currentUser.id) {
+                await course.update(req.body);
+                res.status(204).end();
+            } else {
+                res.status(403).json({message: 'You cannot update this course since you are not the owner.'});
+            }
+        } else {
+            res.status(404).json({message: `Course #${req.params.id} was not found`}).end();
+        }
     }
+
+
 }));
 
 // DELETE /api/courses/:id 204 - Deletes a course and returns no content
