@@ -13,6 +13,7 @@
 - in the terminal: navigate to the project folder location
     - execute the command: npm install
     - execute the command: npm start
+    - execute the command: npm run seed
 - use Postman to test HTTP verbs on routes
 
 ## Going for "Exceeds Expectations"
