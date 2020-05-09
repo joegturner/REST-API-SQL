@@ -13,8 +13,7 @@ const { Course, User } = db;
 // import authenticator
 const authenticateUser = require('../js/authenticate').authenticateUser;
 
-//
-
+// async try catch handler
 function asyncHandler(cb) {
     return async (req, res, next) => {
         try {
@@ -96,13 +95,6 @@ router.post('/', [
     
         res.status(201).location('/').end();
     }
-}));
-
-// Delete route, temporary for DB management
-router.delete('/:id/delete', asyncHandler(async (req, res) => {
-    const user = await User.findByPk((req.params.id));
-    await user.destroy();
-    res.status(204).json(user);
 }));
 
 module.exports = router;
