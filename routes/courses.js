@@ -1,11 +1,17 @@
 'user strict';
 
+// import modules
 const express = require('express');
 const router = express.Router();
-const authenticateUser = require('../js/authenticate').authenticateUser;
+
+// import models
 const db = require('../models');
 const { Course, User } = db;
 
+// import authenticator
+const authenticateUser = require('../js/authenticate').authenticateUser;
+
+// async try catch handler
 function asyncHandler(cb) {
     return async (req, res, next) => {
         try {
@@ -15,6 +21,7 @@ function asyncHandler(cb) {
         }
     }
 }
+
 // GET /api/courses 200 - Returns a list of courses (including the user that owns each course)
 router.get('/', asyncHandler(async (req,res) => {
     const courses = await Course.findAll({
@@ -42,6 +49,7 @@ router.get('/', asyncHandler(async (req,res) => {
         res.status(404).json({message: "Courses were not found"});
     }
 }));
+
 // GET /api/courses/:id 200 - Returns a the course (including the user that owns the course) for the provided course ID
 router.get('/:id', asyncHandler(async (req, res) => {
     const course = await Course.findByPk(req.params.id, {
