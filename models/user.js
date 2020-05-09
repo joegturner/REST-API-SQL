@@ -1,0 +1,75 @@
+'use strict';
+const Sequelize = require('sequelize');
+
+module.exports = (sequelize) => {
+    class User extends Sequelize.Model {
+
+    }
+    User.init({
+        id: {
+            type: Sequelize.INTEGER,
+            primaryKey: true,
+            autoIncrement: true
+        },
+        firstName: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            validate: {
+                notNull: {
+                    msg: 'Please enter a value for "firstName"'
+                },
+                notEmpty: {
+                    msg: 'Please enter a value for "firstName"'
+                }
+            }
+        },
+        lastName: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            validate: {
+                notNull: {
+                    msg: 'Please enter a value for "lastName"'
+                },
+                notEmpty: {
+                    msg: 'Please enter a value for "lastName"'
+                }
+            }
+        },
+        emailAddress: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            validate: {
+                notNull: {
+                    msg: 'Please enter a value for "emailAddress"'
+                },
+                notEmpty: {
+                    msg: 'Please enter a value for "emailAddress"'
+                }
+            }
+        }, 
+        password: {
+            type: Sequelize.STRING,
+            allowNull: false,
+            validate: {
+                notNull: {
+                    msg: 'Please enter a value for "password"'
+                },
+                notEmpty: {
+                    msg: 'Please enter a value for "password"'
+                }
+            }
+        }
+    }, { sequelize });
+
+    User.associate = (models) => {
+        User.hasMany(models.Course, {
+            as: 'user',
+            foreignKey: {
+                fieldName: 'userId',
+                allowNull: false
+            },
+        });
+    };
+
+    return User;
+};
